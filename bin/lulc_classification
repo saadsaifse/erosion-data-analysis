@@ -1,0 +1,4 @@
+#!/bin/bash
+echo Performing LULC classification
+
+otbcli_PolygonClassStatistics -in ../data/2003/2003.tif -vec ../data/2003/2003.shp -field Code -out ../data/2003/2003-classes.xml
