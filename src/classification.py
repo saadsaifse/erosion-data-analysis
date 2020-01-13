@@ -3,8 +3,7 @@
 import otbApplication as otb
 import os
 
-# parameters
-
+# Parameters
 sampleSelectionStrategy = "smallest"
 
 def createFilePathsForYear(year):
@@ -24,7 +23,7 @@ def createFilePathsForYear(year):
 
 paths = createFilePathsForYear(2003)
 
-# create Polygon Class Statistics
+# Create Polygon Class Statistics
 print("Creating class statitstics...")
 pcs = otb.Registry.CreateApplication("PolygonClassStatistics")
 pcs.SetParameterString("in", paths['tif'])
@@ -34,7 +33,7 @@ pcs.SetParameterString("out", paths['classes'])
 pcs.ExecuteAndWriteOutput()
 print("Class statitstics created")
 
-# select samples
+# Select samples
 print("Selecting samples...")
 sampleSelection = otb.Registry.CreateApplication("SampleSelection")
 sampleSelection.SetParameterString("in", paths['tif'])
@@ -46,3 +45,14 @@ sampleSelection.SetParameterString("outrates", paths['rates'])
 sampleSelection.SetParameterString("out", paths['samples'])
 sampleSelection.ExecuteAndWriteOutput()
 print("Samples selected")
+
+# Extract samples
+print("Extracting samples...")
+sampleExtraction = otb.Registry.CreateApplication("SampleExtraction")
+sampleExtraction.SetParameterString("in", paths['tif'])
+sampleExtraction.SetParameterString("vec", paths['samples'])
+sampleExtraction.SetParameterString("outfield", 'prefix')
+sampleExtraction.SetParameterString("outfield.prefix.name", 'band_')
+sampleExtraction.SetParameterString("field", 'code')
+sampleExtraction.ExecuteAndWriteOutput()
+print("Samples extracted")
