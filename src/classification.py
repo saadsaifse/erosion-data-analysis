@@ -19,6 +19,7 @@ def createFilePathsForYear(year):
     paths["confusionMatrix"] = os.path.join(baseDataPath, "{}-confusion-matrix.csv".format(year))
     paths["lut"] = os.path.join(baseDataPath, "{}-lut-mapping-file.txt".format(year))
     paths["rgb"] = os.path.join(baseDataPath, "{}-RGB-color-image.tif".format(year))
+    paths["imageStatistics"] = os.path.join(baseDataPath, "{}-image-statistics.xml".format(year))
     return paths
 
 paths = createFilePathsForYear(2003)
@@ -56,3 +57,11 @@ sampleExtraction.SetParameterString("outfield.prefix.name", 'band_')
 sampleExtraction.SetParameterString("field", 'code')
 sampleExtraction.ExecuteAndWriteOutput()
 print("Samples extracted")
+
+# Compute image statistics
+print("Computing image statistics...")
+imageStatistics = otb.Registry.CreateApplication("ComputeImagesStatistics")
+imageStatistics.SetParameterStringList("il", [paths['tif']])
+imageStatistics.SetParameterString("out", paths['imageStatistics'])
+imageStatistics.ExecuteAndWriteOutput()
+print("Image statistics computed")
