@@ -86,4 +86,15 @@ imageClassifier.SetParameterString("model", paths['model'])
 imageClassifier.SetParameterString("out", paths['labeledImage'])
 print("Image Classified")
 
+# Compute Confusion matrix
+print("Computing confusion matrix...")
+cm = otb.Registry.CreateApplication("ComputeConfusionMatrix")
+cm.SetParameterString("in", paths['labeledImage'])
+cm.SetParameterString("ref", "vector")
+cm.SetParameterString("ref.vector.in", paths['shp'])
+cm.SetParameterString("ref.vector.field", "code")
+cm.SetParameterString("out", paths['confusionMatrix'])
+print("Confusion matrix computed")
+
+
 
