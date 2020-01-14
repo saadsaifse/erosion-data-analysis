@@ -96,5 +96,14 @@ cm.SetParameterString("ref.vector.field", "code")
 cm.SetParameterString("out", paths['confusionMatrix'])
 print("Confusion matrix computed")
 
+# Color mapping
+print("Perform color mapping")
+colorMapping = otb.Registry.CreateApplication("ColorMapping")
+colorMapping.SetParameterString("in", paths['labeledImage'])
+colorMapping.SetParameterString("method", "custom")
+colorMapping.SetParameterString("method.custom.lut", paths['lut'])
+colorMapping.SetParameterString("out", paths['rgb'])
+print("Color mapping done")
+
 
 
