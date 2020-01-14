@@ -5,6 +5,7 @@ import os
 
 # Parameters
 sampleSelectionStrategy = "smallest"
+classifier = "rf" # Random forest
 
 def createFilePathsForYear(year):
     baseDataPath = "../data/{}".format(str(year))
@@ -65,3 +66,24 @@ imageStatistics.SetParameterStringList("il", [paths['tif']])
 imageStatistics.SetParameterString("out", paths['imageStatistics'])
 imageStatistics.ExecuteAndWriteOutput()
 print("Image statistics computed")
+
+# Train Vector Classifier
+print("Training Vector Classifier...")
+vectorClassifier = otb.Registry.CreateApplication("TrainVectorClassifier")
+vectorClassifier.SetParameterStringList("io.vd", [paths['samples']])
+vectorClassifier.SetParameterString("cfield", 'code')
+vectorClassifier.SetParameterString("io.out", paths['model'])
+vectorClassifier.SetParameterString("classifier", classifier)
+vectorClassifier.SetParameterStringList("feat", ['band_0', 'band_1', 'band_2', 'band_3'])
+vectorClassifier.ExecuteAndWriteOutput()
+print("Vector Classifier trained")
+
+# Classify Images
+print("Classifying image...")
+imageClassifier = otb.Registry.CreateApplication("ImageClassifier")
+imageClassifier.SetParameterString("in", paths['tif'])
+imageClassifier.SetParameterString("model", paths['model'])
+imageClassifier.SetParameterString("out", paths['labeledImage'])
+print("Image Classified")
+
+
