@@ -10,10 +10,15 @@ import numpy as np
 Masks out the water by the biggest contour found in
 the threshholded image
 '''
-def threshhold(img):
+def threshhold(img, outputFolder, number):
+    kernel = np.ones((3,3),np.uint8)
+
     blur = cv2.medianBlur(img, 3)
-    water = cv2.inRange(blur, 2, 30)
-    ret, thres = cv2.threshold(blur, 30, 255, 0)
+    closing = cv2.morphologyEx(blur, cv2.MORPH_CLOSE, kernel)
+    cv2.imwrite(outputFolder + '/image' + str(number) + ".tif", blur)
+
+    ret, thres = cv2.threshold(blur, 26, 255, 0)
+
     gray2 = img.copy()
     mask = np.zeros(thres.shape, np.uint8)
 
@@ -62,8 +67,12 @@ def vectorize(img, path, outputFolder, number):
     outputDataset.SetGeoTransform(inpuDatasetNIR.GetGeoTransform())
     outputDataset.SetProjection(inpuDatasetNIR.GetProjection())
 
+    srs_source = inpuDatasetNIR.GetSpatialRef()
+    srs_source.ImportFromEPSG(4326)
+    # print(inpuDatasetNIR.GetProjection())
+
     # Finally get the thresholded image
-    land = threshhold(img)
+    land = threshhold(img, outputFolder, number)
     # And save it to the tif
     outputDataset.GetRasterBand(1).WriteArray(land)
 
@@ -75,7 +84,7 @@ def vectorize(img, path, outputFolder, number):
         shpdriver.DeleteDataSource(dst_layername+".shp")
         print('deleted shapefile ' + str(number))
     dst_ds = shpdriver.CreateDataSource( dst_layername + ".shp" )
-    dst_layer = dst_ds.CreateLayer(dst_layername, srs = None )
+    dst_layer = dst_ds.CreateLayer(dst_layername, srs = srs_source )
 
     # and then also vectorize it
     gdal.Polygonize( outputDataset.GetRasterBand(1), outputDataset.GetRasterBand(1), dst_layer, -1, [], callback=None )
@@ -93,7 +102,7 @@ def vectorize(img, path, outputFolder, number):
 
 if __name__ == '__main__':
     # TODO adjust the paths
-    inputFolder = r"F:\Dokumente\Uni_Msc\2019_2020_WS\RSProject\studyArea3\nir_inputs"
+    inputFolder = r"F:\Dokumente\Uni_Msc\2019_2020_WS\RSProject\studyArea3\NIR"
     outputFolder = r"F:\Dokumente\Uni_Msc\2019_2020_WS\RSProject\studyArea3\nir_outputs"
     folderItems = os.listdir(inputFolder)
     tiffs = [fi for fi in folderItems if fi.endswith(".tif")]
@@ -102,8 +111,11 @@ if __name__ == '__main__':
     years = np.zeros((len(tiffs), 1))
     i = 0
 
+    targetMin = 0.0
+    targetMax = 255.0
+
     # Go through all the tiffs in the folder
-    if (len(tiffs) > 1):
+    if (len(tiffs) > 0):
         while i < len(tiffs):
             names = os.path.splitext(tiffs[i])
             years[i] = int(names[0])
@@ -114,8 +126,16 @@ if __name__ == '__main__':
             print(image.dtype)
             # are any in 16bit?
             if (image.dtype == "uint16"):
-                image = cv2.normalize(
-                    image,  image, 0, 255, cv2.NORM_MINMAX).astype('uint8')
+                # # option 1:
+                # image = cv2.normalize(
+                #     image,  image, 0, 255, cv2.NORM_MINMAX).astype('uint8')
+                # # option 2:
+                image = (image/256).astype('uint8')
+                # # option 3:
+                # minVal = np.amin(image)
+                # maxVal = np.amax(image)
+                # imgScaled = (image-minVal)*((targetMax-targetMin)/(maxVal-minVal))+targetMin
+                # image = imgScaled.astype(np.uint8)
 
             area = vectorize(image, imFilename, outputFolder, i)
             # Storing difference value
@@ -130,7 +150,7 @@ if __name__ == '__main__':
     differences[0] = 0
     # Iterating to calculate differences
     while i < len(areas)-1 : 
-        differences[i+1] = areas[i] - areas[i+1]
+        differences[i+1] = differences[i] + (areas[i] - areas[i+1])
         i += 1
 
     print(differences)
