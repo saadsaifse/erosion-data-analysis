@@ -1,5 +1,8 @@
 # Erosion Data Analysis
 
+## Download Data
+
+Download that data from [here](https://drive.google.com/drive/folders/1S0LurFVSTzLy_mXiFXXyjemajqTX9Aof?usp=sharing) and copy it inside the `./data` folder. Then you can specify the path for the specific data folder inside `./src/classification.py` file.
 
 ## Satellite Image Classification
 We are using Orfeo library to classify satellite imagery. We have used their Python API in order to make it reproducible and also to make it coherent with our other python based modules.
