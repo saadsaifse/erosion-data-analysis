@@ -8,7 +8,7 @@ sampleSelectionStrategy = "smallest"
 classifier = "rf" # Random forest
 
 def createFilePathsForYear(year):
-    baseDataPath = "../data/{}".format(str(year))
+    baseDataPath = "../data/19.01.20/{}".format(str(year))
     paths = {}
     paths["tif"] = os.path.join(baseDataPath, "{}.tif".format(year))
     paths["shp"] = os.path.join(baseDataPath, "{}.shp".format(year))
@@ -18,12 +18,12 @@ def createFilePathsForYear(year):
     paths["model"] = os.path.join(baseDataPath, "{}-model.rf".format(year))
     paths["labeledImage"] = os.path.join(baseDataPath, "{}-labeled-image.tif".format(year))
     paths["confusionMatrix"] = os.path.join(baseDataPath, "{}-confusion-matrix.csv".format(year))
-    paths["lut"] = os.path.join(baseDataPath, "{}-lut-mapping-file.txt".format(year))
+    paths["lut"] = "../lut_mapping_file.txt" # use the same lookup table file
     paths["rgb"] = os.path.join(baseDataPath, "{}-RGB-color-image.tif".format(year))
     paths["imageStatistics"] = os.path.join(baseDataPath, "{}-image-statistics.xml".format(year))
     return paths
 
-paths = createFilePathsForYear(2003)
+paths = createFilePathsForYear(1999)
 
 # Create Polygon Class Statistics
 print("Creating class statitstics...")
@@ -84,6 +84,7 @@ imageClassifier = otb.Registry.CreateApplication("ImageClassifier")
 imageClassifier.SetParameterString("in", paths['tif'])
 imageClassifier.SetParameterString("model", paths['model'])
 imageClassifier.SetParameterString("out", paths['labeledImage'])
+imageClassifier.ExecuteAndWriteOutput()
 print("Image Classified")
 
 # Compute Confusion matrix
@@ -94,6 +95,7 @@ cm.SetParameterString("ref", "vector")
 cm.SetParameterString("ref.vector.in", paths['shp'])
 cm.SetParameterString("ref.vector.field", "code")
 cm.SetParameterString("out", paths['confusionMatrix'])
+cm.ExecuteAndWriteOutput()
 print("Confusion matrix computed")
 
 # Color mapping
@@ -103,6 +105,7 @@ colorMapping.SetParameterString("in", paths['labeledImage'])
 colorMapping.SetParameterString("method", "custom")
 colorMapping.SetParameterString("method.custom.lut", paths['lut'])
 colorMapping.SetParameterString("out", paths['rgb'])
+colorMapping.ExecuteAndWriteOutput()
 print("Color mapping done")
 
 
