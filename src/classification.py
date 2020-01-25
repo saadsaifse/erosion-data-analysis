@@ -8,7 +8,7 @@ sampleSelectionStrategy = "smallest"
 classifier = "rf" # Random forest
 
 def createFilePathsForYear(year):
-    baseDataPath = "../data/19.01.20/{}".format(str(year))
+    baseDataPath = "../data/25.01.20/{}".format(str(year))
     paths = {}
     paths["tif"] = os.path.join(baseDataPath, "{}.tif".format(year))
     paths["shp"] = os.path.join(baseDataPath, "{}.shp".format(year))
@@ -23,7 +23,10 @@ def createFilePathsForYear(year):
     paths["imageStatistics"] = os.path.join(baseDataPath, "{}-image-statistics.xml".format(year))
     return paths
 
-paths = createFilePathsForYear(1999)
+# for x in [1990, 1999, 2003, 2008, 2011, 2019]:
+#     paths = createFilePathsForYear(x)
+
+paths = createFilePathsForYear(2019)
 
 # Create Polygon Class Statistics
 print("Creating class statitstics...")
