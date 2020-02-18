@@ -2,7 +2,10 @@
 
 ## Download Data
 
-Download that data from [here](https://drive.google.com/drive/folders/1S0LurFVSTzLy_mXiFXXyjemajqTX9Aof?usp=sharing) and copy it inside the `./data` folder. Then you can specify the path for the specific data folder inside `./src/classification.py` file.
+Download that data from [here](https://drive.google.com/drive/folders/1S0LurFVSTzLy_mXiFXXyjemajqTX9Aof?usp=sharing) and copy it inside the `./data` folder. Then you can specify the path for the specific data folder inside `./src/classification.py` file. To do the coastal erosion quantification, put the near-infrared images into an extra folder and use the `./coast_tracing/differencing.py` file, adjusting the input path.
+
+## Coastal Erosion Quantification
+This part uses Numpy, matplotlib, the OpenCV library, as well as standalone GDA and OGR libraries. To find out how much coast was lost throughout the years of your satellite data, run the `./coast_tracing/differencing.py` file having adjusted the paths to input and output folders. As a result, in the output folder you will recieve the land/water thresholded Shapefiles and GeoTiffs for each image in your input folder, as well as general statistics shown in a pop-up window.
 
 ## Satellite Image Classification
 We are using Orfeo library to classify satellite imagery. We have used their Python API in order to make it reproducible and also to make it coherent with our other python based modules.
